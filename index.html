@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Portfolio — Saiprasad Gone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f0e;
+      --surface: #141714;
+      --surface2: #1c201c;
+      --border: #2a2f2a;
+      --accent: #b5f23a;
+      --accent2: #3af2a0;
+      --text: #e8ede8;
+      --muted: #7a8a7a;
+      --tag-bg: #1e271e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    #cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(181,242,58,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+    #trail-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9990; }
+
+    /* SCROLL PROGRESS */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 2px; background: var(--accent);
+      z-index: 9997; width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* TOAST */
+    #toast-container {
+      position: fixed; bottom: 2rem; right: 2rem;
+      z-index: 5000; display: flex;
+      flex-direction: column; gap: 0.75rem;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 0.85rem 1.2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.73rem;
+      color: var(--text);
+      border-radius: 4px;
+      display: flex; align-items: center; gap: 0.75rem;
+      min-width: 280px; max-width: 340px;
+      animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+      pointer-events: all;
+    }
+    .toast.exit { animation: toastOut 0.35s ease forwards; }
+    .toast-dot {
+      width: 7px; height: 7px;
+      background: var(--accent); border-radius: 50%;
+      flex-shrink: 0; animation: blink 1.5s ease-in-out infinite;
+    }
+    .toast-time { margin-left: auto; color: var(--muted); font-size: 0.65rem; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateX(0); max-height: 80px; } to { opacity: 0; transform: translateX(24px); max-height: 0; padding: 0; margin: 0; } }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* LIVE BADGE */
+    #live-badge {
+      position: fixed; top: 5rem; right: 2rem;
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 0.5rem 1rem; font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; color: var(--muted); border-radius: 2px;
+      z-index: 200; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .live-dot {
+      width: 6px; height: 6px; background: #f23a3a;
+      border-radius: 50%; animation: blink 1s ease-in-out infinite;
+    }
+    #live-count { color: var(--accent); font-weight: 500; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 4rem;
+      background: rgba(13,15,14,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); z-index: 100;
+    }
+    .nav-logo { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; transition: color 0.2s; cursor: none; }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 8rem 4rem 4rem; position: relative; overflow: hidden;
+    }
+    .hero-grid-bg {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px; opacity: 0.35;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 80%);
+    }
+    .hero-glow {
+      position: absolute; width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(181,242,58,0.08) 0%, transparent 70%);
+      top: 10%; left: 60%; transform: translateX(-50%);
+      animation: breathe 6s ease-in-out infinite;
+    }
+    @keyframes breathe { 0%,100%{transform:translateX(-50%) scale(1);opacity:.6} 50%{transform:translateX(-50%) scale(1.1);opacity:1} }
+    .hero-content { position: relative; max-width: 720px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      border: 1px solid rgba(181,242,58,0.3); padding: 0.35rem 0.9rem;
+      border-radius: 2px; margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.8s 0.1s ease forwards;
+    }
+    .hero-tag::before { content:''; width:6px; height:6px; background:var(--accent); border-radius:50%; animation: blink 1.5s ease-in-out infinite; }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem); line-height: 1.05; margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.25s ease forwards;
+    }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero-sub { font-size: 1.1rem; color: var(--muted); max-width: 520px; margin-bottom: 2.5rem; min-height: 2.5rem; opacity: 0; animation: fadeUp 0.8s 0.4s ease forwards; }
+    .typing-cursor { display:inline-block; width:2px; height:1em; background:var(--accent); margin-left:2px; vertical-align:middle; animation: blink 0.8s step-end infinite; }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.8s 0.55s ease forwards; }
+
+    .btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.75rem 1.8rem; font-family:'DM Mono',monospace; font-size:0.8rem; letter-spacing:0.08em; text-decoration:none; border-radius:2px; transition:all 0.2s; cursor:none; border:none; }
+    .btn-primary { background:var(--accent); color:#0d0f0e; font-weight:500; }
+    .btn-primary:hover { background:#c8f55a; transform:translateY(-2px); box-shadow:0 8px 24px rgba(181,242,58,0.25); }
+    .btn-ghost { border:1px solid var(--border); color:var(--text); background:transparent; }
+    .btn-ghost:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+
+    /* STATS */
+    .stats-bar { display:flex; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--surface); }
+    .stat { flex:1; padding:1.8rem 2.5rem; border-right:1px solid var(--border); transition:background 0.2s; }
+    .stat:last-child { border-right:none; }
+    .stat:hover { background:var(--surface2); }
+    .stat-num { font-family:'DM Serif Display',serif; font-size:2.2rem; color:var(--accent); display:block; line-height:1; margin-bottom:0.3rem; }
+    .stat-label { font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+
+    /* SECTION */
+    section { padding: 6rem 4rem; }
+    .section-header { display:flex; align-items:baseline; gap:1.5rem; margin-bottom:3.5rem; }
+    .section-label { font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--accent); letter-spacing:0.15em; text-transform:uppercase; white-space:nowrap; }
+    .section-title { font-family:'DM Serif Display',serif; font-size:clamp(2rem,3.5vw,3rem); }
+    .section-line { flex:1; height:1px; background:var(--border); }
+
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.7s ease,transform 0.7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* PROJECTS */
+    .projects-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:1.5px; background:var(--border); border:1.5px solid var(--border); }
+    .project-card { background:var(--surface); padding:2.5rem; transition:background 0.25s; position:relative; overflow:hidden; }
+    .project-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform 0.35s ease; }
+    .project-card:hover { background:var(--surface2); }
+    .project-card:hover::after { transform:scaleX(1); }
+    .card-type { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent); margin-bottom:1.2rem; }
+    .card-type span { background:var(--tag-bg); border:1px solid rgba(181,242,58,0.2); padding:0.2rem 0.6rem; border-radius:2px; }
+    .card-title { font-family:'DM Serif Display',serif; font-size:1.55rem; line-height:1.2; margin-bottom:0.8rem; }
+    .card-desc { font-size:0.9rem; color:var(--muted); margin-bottom:1.5rem; }
+    .card-visual { width:100%; aspect-ratio:16/9; background:var(--surface2); border:1px solid var(--border); border-radius:2px; margin-bottom:1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.75rem; color:var(--muted); font-family:'DM Mono',monospace; font-size:0.72rem; letter-spacing:0.08em; overflow:hidden; transition:border-color 0.2s; }
+    .card-visual:hover { border-color:var(--accent); }
+    .upload-icon { width:36px; height:36px; opacity:0.4; }
+    .insights { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+    .insight { display:flex; gap:0.75rem; font-size:0.83rem; color:var(--muted); align-items:flex-start; }
+    .insight::before { content:'→'; color:var(--accent2); flex-shrink:0; }
+    .tags { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.8rem; }
+    .tag { font-family:'DM Mono',monospace; font-size:0.65rem; padding:0.25rem 0.7rem; border:1px solid var(--border); color:var(--muted); border-radius:2px; letter-spacing:0.06em; }
+    .card-links { display:flex; gap:1rem; }
+    .card-link { font-family:'DM Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(181,242,58,0.3); padding-bottom:1px; transition:border-color 0.2s; cursor:none; }
+    .card-link:hover { border-color:var(--accent); }
+
+    /* UPCOMING */
+    .upcoming-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); }
+    .upcoming-card { background:var(--surface); padding:2rem; transition:background 0.2s; }
+    .upcoming-card:hover { background:var(--surface2); }
+    .upcoming-badge { font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; border:1px solid var(--border); padding:0.2rem 0.6rem; border-radius:2px; display:inline-block; margin-bottom:1rem; }
+    .upcoming-title { font-family:'DM Serif Display',serif; font-size:1.2rem; color:var(--muted); margin-bottom:0.5rem; }
+    .upcoming-desc { font-size:0.82rem; color:#4a5a4a; }
+
+    /* SKILLS */
+    .skills-section { background:var(--surface); }
+    .skills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); }
+    .skill-item { background:var(--surface); padding:1.5rem 2rem; display:flex; flex-direction:column; gap:0.5rem; transition:background 0.2s; }
+    .skill-item:hover { background:var(--surface2); }
+    .skill-name { font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--text); letter-spacing:0.05em; }
+    .skill-bar-bg { height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .skill-bar-fill { height:100%; background:var(--accent); border-radius:2px; width:0%; transition:width 1.4s cubic-bezier(0.22,1,0.36,1); }
+    .skill-level { font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--muted); letter-spacing:0.08em; }
+
+    /* ABOUT */
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; }
+    .about-text p { color:var(--muted); margin-bottom:1rem; font-size:0.95rem; }
+    .about-contact { display:flex; flex-direction:column; gap:1rem; }
+    .contact-row { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; border:1px solid var(--border); background:var(--surface); transition:border-color 0.2s,background 0.2s; }
+    .contact-row:hover { border-color:var(--accent); background:var(--surface2); }
+    .contact-row a { color:var(--accent); font-family:'DM Mono',monospace; font-size:0.8rem; text-decoration:none; cursor:none; }
+    .contact-label { font-family:'DM Mono',monospace; font-size:0.68rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+
+    footer { border-top:1px solid var(--border); padding:2rem 4rem; display:flex; justify-content:space-between; align-items:center; }
+    footer p { font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--muted); letter-spacing:0.06em; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:1000; opacity:0.5; }
+
+    @media (max-width:768px) {
+      nav { padding:1rem 1.5rem; }
+      .nav-links { display:none; }
+      .hero, section { padding-left:1.5rem; padding-right:1.5rem; }
+      .about-grid { grid-template-columns:1fr; }
+      footer { flex-direction:column; gap:1rem; text-align:center; }
+      body { cursor:auto; }
+      #cursor, #cursor-ring, #trail-canvas { display:none; }
+      #live-badge { right:1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="trail-canvas"></canvas>
+<div id="progress-bar"></div>
+<div id="live-badge"><span class="live-dot"></span><span id="live-count">1</span>&nbsp;viewing now</div>
+<div id="toast-container"></div>
+
+<nav>
+  <div class="nav-logo">◈ Saiprasad Gone · Data Portfolio</div>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://github.com/Saiprasad7649" target="_blank">GitHub ↗</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Open to opportunities</div>
+    <h1>Turning data<br>into <em>decisions</em></h1>
+    <p class="hero-sub"><span id="typed-text"></span><span class="typing-cursor"></span></p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">View Projects ↓</a>
+      <a href="https://github.com/Saiprasad7649" target="_blank" class="btn btn-ghost">GitHub Profile ↗</a>
+    </div>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat reveal"><span class="stat-num" data-target="2">0</span><span class="stat-label">Live Projects</span></div>
+  <div class="stat reveal"><span class="stat-num" data-target="3">0</span><span class="stat-label">Tools Used</span></div>
+  <div class="stat reveal"><span class="stat-num" data-target="4">0</span><span class="stat-label">Skills Growing</span></div>
+  <div class="stat reveal"><span class="stat-num" id="total-views-num">—</span><span class="stat-label">Portfolio Views</span></div>
+</div>
+
+<section id="projects">
+  <div class="section-header reveal">
+    <span class="section-label">01</span>
+    <h2 class="section-title">Projects</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="card-type"><span>Excel Dashboard</span></div>
+      <h3 class="card-title">Project Title One</h3>
+      <p class="card-desc">A short 1–2 sentence description of this dashboard and the problem it solves.</p>
+      <div class="card-visual">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span>Add dashboard screenshot</span>
+      </div>
+      <div class="insights">
+        <div class="insight">Key insight or finding #1 from this dashboard</div>
+        <div class="insight">Key metric, trend, or result that matters</div>
+        <div class="insight">What decision this dashboard helped make</div>
+      </div>
+      <div class="tags"><span class="tag">Excel</span><span class="tag">Pivot Tables</span><span class="tag">Data Viz</span></div>
+      <div class="card-links">
+        <a href="https://github.com/Saiprasad7649/repo-name" target="_blank" class="card-link">View on GitHub ↗</a>
+        <a href="your-file.xlsx" download class="card-link">Download .xlsx ↓</a>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <div class="card-type"><span>Excel Dashboard</span></div>
+      <h3 class="card-title">Project Title Two</h3>
+      <p class="card-desc">A short 1–2 sentence description of this dashboard and the problem it solves.</p>
+      <div class="card-visual">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span>Add dashboard screenshot</span>
+      </div>
+      <div class="insights">
+        <div class="insight">Key insight or finding #1 from this dashboard</div>
+        <div class="insight">Key metric, trend, or result that matters</div>
+        <div class="insight">What decision this dashboard helped make</div>
+      </div>
+      <div class="tags"><span class="tag">Excel</span><span class="tag">VLOOKUP</span><span class="tag">Charts</span></div>
+      <div class="card-links">
+        <a href="https://github.com/Saiprasad7649/repo-name" target="_blank" class="card-link">View on GitHub ↗</a>
+        <a href="your-file.xlsx" download class="card-link">Download .xlsx ↓</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-header reveal">
+    <span class="section-label">02</span>
+    <h2 class="section-title">Coming Soon</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="upcoming-grid">
+    <div class="upcoming-card reveal"><span class="upcoming-badge">In Progress</span><h4 class="upcoming-title">SQL Project</h4><p class="upcoming-desc">Data exploration & querying with real datasets</p></div>
+    <div class="upcoming-card reveal"><span class="upcoming-badge">Planned</span><h4 class="upcoming-title">Python / Pandas</h4><p class="upcoming-desc">Data wrangling, EDA, and visualizations</p></div>
+    <div class="upcoming-card reveal"><span class="upcoming-badge">Planned</span><h4 class="upcoming-title">Power BI Dashboard</h4><p class="upcoming-desc">Interactive business intelligence reports</p></div>
+  </div>
+</section>
+
+<section id="skills" class="skills-section">
+  <div class="section-header reveal">
+    <span class="section-label">03</span>
+    <h2 class="section-title">Skills</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-item reveal"><span class="skill-name">Microsoft Excel</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="85"></div></div><span class="skill-level">Advanced</span></div>
+    <div class="skill-item reveal"><span class="skill-name">Data Visualization</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div><span class="skill-level">Advanced</span></div>
+    <div class="skill-item reveal"><span class="skill-name">SQL</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="55"></div></div><span class="skill-level">Learning</span></div>
+    <div class="skill-item reveal"><span class="skill-name">Python / Pandas</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="30"></div></div><span class="skill-level">Upcoming</span></div>
+    <div class="skill-item reveal"><span class="skill-name">Power BI</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="25"></div></div><span class="skill-level">Upcoming</span></div>
+    <div class="skill-item reveal"><span class="skill-name">Data Storytelling</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="75"></div></div><span class="skill-level">Proficient</span></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-header reveal">
+    <span class="section-label">04</span>
+    <h2 class="section-title">About</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>Hi, I'm <strong>[Saiprasad Gone]</strong> — a data analyst passionate about transforming raw data into meaningful stories that drive real decisions.</p>
+      <p>Currently building my portfolio with Excel dashboards, and expanding into SQL, Python/Pandas, and Power BI. Every project is focused on clarity, accuracy, and impact.</p>
+      <p>Open to data analyst roles, internships, and freelance projects. Let's connect.</p>
+    </div>
+    <div class="about-contact reveal">
+      <div class="contact-row"><span class="contact-label">GitHub</span><a href="https://github.com/Saiprasad7649" target="_blank">github.com/Saiprasad7649 ↗</a></div>
+      <div class="contact-row"><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/saiprasad18" target="_blank">linkedin.com/in/saiprasad18 ↗</a></div>
+      <div class="contact-row"><span class="contact-label">Email</span><a href="mailto:gonesaiprasad1@gmail.com">gonesaiprasad1@gmail.com</a></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 · [Saiprasad Gone] · Data Portfolio</p>
+  <p>Built with HTML · Hosted on GitHub Pages</p>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+document.querySelectorAll('a,button,.project-card,.stat,.skill-item,.upcoming-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='50px'; ring.style.height='50px'; });
+  el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
+});
+(function animCursor(){
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animCursor);
+})();
+
+// TRAIL
+const canvas = document.getElementById('trail-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+let trail = [];
+document.addEventListener('mousemove', e => { trail.push({x:e.clientX,y:e.clientY,life:1}); if(trail.length>30) trail.shift(); });
+(function drawTrail(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  trail.forEach((p,i) => {
+    p.life -= 0.035;
+    if(p.life<=0) return;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, (i/trail.length)*3.5, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(181,242,58,${p.life*0.28})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawTrail);
+})();
+
+// SCROLL PROGRESS
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  document.getElementById('progress-bar').style.width = (h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+});
+
+// SCROLL REVEAL + SKILL BARS + COUNTERS
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if(!e.isIntersecting) return;
+    setTimeout(() => e.target.classList.add('visible'), i*80);
+    e.target.querySelectorAll('.skill-bar-fill').forEach(b => { b.style.width = b.dataset.width+'%'; });
+    e.target.querySelectorAll('.stat-num[data-target]').forEach(el => {
+      const target = parseInt(el.dataset.target);
+      let cur=0; const step=target/30;
+      const iv = setInterval(() => { cur+=step; if(cur>=target){el.textContent=target;clearInterval(iv);}else el.textContent=Math.floor(cur); }, 40);
+    });
+    obs.unobserve(e.target);
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// TYPING EFFECT
+const phrases = [
+  'Health & Clinical Data Analyst | SQL | Excel | Python | Power BI',
+  'Transforming healthcare data into actionable insights',
+  'Open to healthcare data analyst opportunities — let\'s connect'
+];
+let pIdx=0, cIdx=0, del=false;
+const typedEl = document.getElementById('typed-text');
+function type(){
+  const ph = phrases[pIdx];
+  if(!del){ typedEl.textContent = ph.slice(0,++cIdx); if(cIdx===ph.length){del=true;setTimeout(type,2200);return;} }
+  else { typedEl.textContent = ph.slice(0,--cIdx); if(cIdx===0){del=false;pIdx=(pIdx+1)%phrases.length;setTimeout(type,400);return;} }
+  setTimeout(type, del?26:50);
+}
+setTimeout(type, 1000);
+
+// TOAST SYSTEM
+function showToast(name, action){
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className='toast';
+  const now = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  t.innerHTML=`<span class="toast-dot"></span><span><strong style="color:var(--text)">${name}</strong><br><span style="color:var(--muted)">${action}</span></span><span class="toast-time">${now}</span>`;
+  container.appendChild(t);
+  setTimeout(()=>{ t.classList.add('exit'); setTimeout(()=>t.remove(),400); }, 4500);
+}
+
+const names = ['Someone from Mumbai','A recruiter from Bangalore','A visitor from Delhi','Someone in Chicago','A hiring manager','A data analyst','Someone in London','A visitor from New York','Someone from Singapore','A recruiter in Toronto','Someone from Hyderabad','A viewer from Seattle'];
+const actions = ['is viewing your portfolio','just opened your Excel dashboard','is looking at your projects','just found your GitHub profile','is reading your about section','is checking out your skills','just scrolled to your projects','spent 2 min on your dashboard','bookmarked your portfolio','is comparing your skills'];
+
+// Live count badge
+let liveCount = 1;
+function setLive(n){ liveCount=Math.max(1,n); document.getElementById('live-count').textContent=liveCount; }
+
+// Staggered realistic toast queue
+[
+  [3000, names[0], actions[0]],
+  [9000, names[1], actions[1]],
+  [17000, names[2], actions[2]],
+  [26000, names[3], actions[3]],
+  [35000, names[4], actions[4]],
+].forEach(([d,n,a]) => setTimeout(()=>showToast(n,a), d));
+
+// Live count drifts
+[5000,12000,20000,29000,38000].forEach((t,i) => setTimeout(()=>setLive([2,3,2,4,3][i]), t));
+
+// Keep firing randomly after initial burst
+function scheduleNext(){
+  const wait = 50000 + Math.random()*60000;
+  setTimeout(()=>{
+    showToast(names[Math.floor(Math.random()*names.length)], actions[Math.floor(Math.random()*actions.length)]);
+    scheduleNext();
+  }, wait);
+}
+setTimeout(scheduleNext, 45000);
+
+// TOTAL VIEW COUNTER (persistent storage)
+async function trackViews(){
+  const key = 'portfolio_total_views';
+  try {
+    let total = 1;
+    try { const r = await window.storage.get(key, true); if(r?.value) total = parseInt(r.value)+1; } catch(e){}
+    await window.storage.set(key, String(total), true);
+    document.getElementById('total-views-num').textContent = total;
+  } catch(e){
+    document.getElementById('total-views-num').textContent = '—';
+  }
+}
+trackViews();
+</script>
+</body>
+</html>
