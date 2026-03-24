@@ -18,6 +18,48 @@
       --muted: #7a8a7a;
       --tag-bg: #1e271e;
     }
+    /* ================= IMAGE MODAL STYLES ================= */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Image inside modal */
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90%;
+  margin-top: 60px;
+}
+
+/* Close button */
+.close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Image hover effect */
+.card-visual img {
+  transition: 0.3s ease;
+}
+
+.card-visual img:hover {
+  opacity: 0.9;
+}
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -257,11 +299,10 @@
       <h3 class="card-title">Hospital Analytics& Performance Optimization</h3>
       <p class="card-desc">A short 1–2 sentence description of this dashboard and the problem it solves.</p>
      <div class="card-visual">
-  <a href="Hospital-Dashboard.png" target="_blank">
-    <img src="Hospital-Dashboard.png" 
-         alt="Hospital Dashboard Screenshot" 
-         style="width:100%; height:100%; object-fit:contain;">
-  </a>
+  <img src="Hospital-Dashboard.png" 
+       alt="Hospital Dashboard Screenshot"
+       style="width:100%; height:100%; object-fit:contain; cursor:zoom-in;"
+       onclick="openModal(this)">
 </div>
       </div>
       <div class="insights">
@@ -409,36 +450,86 @@ const obs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.15 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+<script>
 
-// TYPING EFFECT
+// ================= IMAGE MODAL =================
+function openModal(img) {
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+  modal.style.display = "block";
+  modalImg.src = img.src;
+}
+
+function closeModal() {
+  document.getElementById("imageModal").style.display = "none";
+}
+
+// ================= TYPING EFFECT =================
 const phrases = [
   'Health & Clinical Data Analyst | SQL | Excel | Python | Power BI',
   'Transforming healthcare data into actionable insights',
   'Open to healthcare data analyst opportunities — let\'s connect'
 ];
-let pIdx=0, cIdx=0, del=false;
+
+let pIdx = 0, cIdx = 0, del = false;
 const typedEl = document.getElementById('typed-text');
+
 function type(){
   const ph = phrases[pIdx];
-  if(!del){ typedEl.textContent = ph.slice(0,++cIdx); if(cIdx===ph.length){del=true;setTimeout(type,2200);return;} }
-  else { typedEl.textContent = ph.slice(0,--cIdx); if(cIdx===0){del=false;pIdx=(pIdx+1)%phrases.length;setTimeout(type,400);return;} }
-  setTimeout(type, del?26:50);
+
+  if(!del){
+    typedEl.textContent = ph.slice(0, ++cIdx);
+    if(cIdx === ph.length){
+      del = true;
+      setTimeout(type, 2200);
+      return;
+    }
+  } else {
+    typedEl.textContent = ph.slice(0, --cIdx);
+    if(cIdx === 0){
+      del = false;
+      pIdx = (pIdx + 1) % phrases.length;
+      setTimeout(type, 400);
+      return;
+    }
+  }
+
+  setTimeout(type, del ? 26 : 50);
 }
+
 setTimeout(type, 1000);
 
-// TOTAL VIEW COUNTER (persistent storage)
+
+// ================= TOTAL VIEW COUNTER =================
 async function trackViews(){
   const key = 'portfolio_total_views';
   try {
     let total = 1;
-    try { const r = await window.storage.get(key, true); if(r?.value) total = parseInt(r.value)+1; } catch(e){}
+
+    try { 
+      const r = await window.storage.get(key, true); 
+      if(r?.value) total = parseInt(r.value) + 1; 
+    } catch(e){}
+
     await window.storage.set(key, String(total), true);
     document.getElementById('total-views-num').textContent = total;
+
   } catch(e){
     document.getElementById('total-views-num').textContent = '—';
   }
 }
+
 trackViews();
+
+<script>
+  // your existing JS code (typing effect, counter, modal functions, etc.)
 </script>
+
+<!-- IMAGE MODAL (ADD THIS HERE) -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="modalImage">
+</div>
+
 </body>
 </html>
