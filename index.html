@@ -18,48 +18,42 @@
       --muted: #7a8a7a;
       --tag-bg: #1e271e;
     }
+
     /* ================= IMAGE MODAL STYLES ================= */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    .modal-content {
+      margin: auto;
+      display: block;
+      max-width: 90%;
+      max-height: 90%;
+      margin-top: 60px;
+    }
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: #ffffff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .card-visual img {
+      transition: 0.3s ease;
+    }
+    .card-visual img:hover {
+      opacity: 0.9;
+    }
 
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.9);
-}
-
-/* Image inside modal */
-.modal-content {
-  margin: auto;
-  display: block;
-  max-width: 90%;
-  max-height: 90%;
-  margin-top: 60px;
-}
-
-/* Close button */
-.close {
-  position: absolute;
-  top: 20px;
-  right: 35px;
-  color: #ffffff;
-  font-size: 40px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Image hover effect */
-.card-visual img {
-  transition: 0.3s ease;
-}
-
-.card-visual img:hover {
-  opacity: 0.9;
-}
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -256,6 +250,12 @@
 <canvas id="trail-canvas"></canvas>
 <div id="progress-bar"></div>
 
+<!-- IMAGE MODAL -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="modalImage">
+</div>
+
 <nav>
   <div class="nav-logo">◈ Saiprasad Gone · Data Portfolio</div>
   <ul class="nav-links">
@@ -294,16 +294,17 @@
     <div class="section-line"></div>
   </div>
   <div class="projects-grid">
+
+    <!-- PROJECT CARD 1 — FIX: closing div was misplaced, leaving insights/tags/links outside the card -->
     <div class="project-card reveal">
       <div class="card-type"><span>Excel Dashboard</span></div>
-      <h3 class="card-title">Hospital Analytics& Performance Optimization</h3>
+      <h3 class="card-title">Hospital Analytics &amp; Performance Optimization</h3>
       <p class="card-desc">A short 1–2 sentence description of this dashboard and the problem it solves.</p>
-     <div class="card-visual">
-  <img src="Hospital-Dashboard.png" 
-       alt="Hospital Dashboard Screenshot"
-       style="width:100%; height:100%; object-fit:contain; cursor:zoom-in;"
-       onclick="openModal(this)">
-</div>
+      <div class="card-visual">
+        <img src="Hospital-Dashboard.png"
+             alt="Hospital Dashboard Screenshot"
+             style="width:100%; height:100%; object-fit:contain; cursor:zoom-in;"
+             onclick="openModal(this)">
       </div>
       <div class="insights">
         <div class="insight">Key insight or finding #1 from this dashboard</div>
@@ -316,6 +317,8 @@
         <a href="https://raw.githubusercontent.com/Saiprasad7649/portfolio/main/Projects/Hospital-Dashboard.xlsm" download class="card-link">Download .xlsm ↓</a>
       </div>
     </div>
+
+    <!-- PROJECT CARD 2 -->
     <div class="project-card reveal">
       <div class="card-type"><span>Excel Dashboard</span></div>
       <h3 class="card-title">Project Title Two</h3>
@@ -335,6 +338,7 @@
         <a href="https://raw.githubusercontent.com/Saiprasad7649/portfolio/main/Projects/Hospital-Dashboard.xlsm" download class="card-link">Download .xlsm ↓</a>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -345,7 +349,7 @@
     <div class="section-line"></div>
   </div>
   <div class="upcoming-grid">
-    <div class="upcoming-card reveal"><span class="upcoming-badge">In Progress</span><h4 class="upcoming-title">SQL Project</h4><p class="upcoming-desc">Data exploration & querying with real datasets</p></div>
+    <div class="upcoming-card reveal"><span class="upcoming-badge">In Progress</span><h4 class="upcoming-title">SQL Project</h4><p class="upcoming-desc">Data exploration &amp; querying with real datasets</p></div>
     <div class="upcoming-card reveal"><span class="upcoming-badge">Planned</span><h4 class="upcoming-title">Python / Pandas</h4><p class="upcoming-desc">Data wrangling, EDA, and visualizations</p></div>
     <div class="upcoming-card reveal"><span class="upcoming-badge">Planned</span><h4 class="upcoming-title">Power BI Dashboard</h4><p class="upcoming-desc">Interactive business intelligence reports</p></div>
   </div>
@@ -375,7 +379,7 @@
   </div>
   <div class="about-grid">
     <div class="about-text reveal">
-      <p>Hi, I'm <strong>[Saiprasad Gone]</strong> — a data analyst passionate about transforming raw data into meaningful stories that drive real decisions.</p>
+      <p>Hi, I'm <strong>Saiprasad Gone</strong> — a data analyst passionate about transforming raw data into meaningful stories that drive real decisions.</p>
       <p>Currently building my portfolio with Excel dashboards, and expanding into SQL, Python/Pandas, and Power BI. Every project is focused on clarity, accuracy, and impact.</p>
       <p>Open to data analyst roles, internships, and freelance projects. Let's connect.</p>
     </div>
@@ -388,148 +392,118 @@
 </section>
 
 <footer>
-  <p>© 2026 · [Saiprasad Gone] · Data Portfolio</p>
+  <p>© 2026 · Saiprasad Gone · Data Portfolio</p>
   <p>Built with HTML · Hosted on GitHub Pages</p>
 </footer>
 
 <script>
-// CURSOR
-const cursor = document.getElementById('cursor');
-const ring = document.getElementById('cursor-ring');
-let mx=0, my=0, rx=0, ry=0;
-document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
-document.querySelectorAll('a,button,.project-card,.stat,.skill-item,.upcoming-card').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='50px'; ring.style.height='50px'; });
-  el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
-});
-(function animCursor(){
-  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
-  rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
-  ring.style.left=rx+'px'; ring.style.top=ry+'px';
-  requestAnimationFrame(animCursor);
-})();
-
-// TRAIL
-const canvas = document.getElementById('trail-canvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-window.addEventListener('resize', () => { canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
-let trail = [];
-document.addEventListener('mousemove', e => { trail.push({x:e.clientX,y:e.clientY,life:1}); if(trail.length>30) trail.shift(); });
-(function drawTrail(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  trail.forEach((p,i) => {
-    p.life -= 0.035;
-    if(p.life<=0) return;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, (i/trail.length)*3.5, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(181,242,58,${p.life*0.28})`;
-    ctx.fill();
+  // ================= CURSOR =================
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  document.querySelectorAll('a,button,.project-card,.stat,.skill-item,.upcoming-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='50px'; ring.style.height='50px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; });
   });
-  requestAnimationFrame(drawTrail);
-})();
+  (function animCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  })();
 
-// SCROLL PROGRESS
-window.addEventListener('scroll', () => {
-  const h = document.documentElement;
-  document.getElementById('progress-bar').style.width = (h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
-});
-
-// SCROLL REVEAL + SKILL BARS + COUNTERS
-const obs = new IntersectionObserver(entries => {
-  entries.forEach((e, i) => {
-    if(!e.isIntersecting) return;
-    setTimeout(() => e.target.classList.add('visible'), i*80);
-    e.target.querySelectorAll('.skill-bar-fill').forEach(b => { b.style.width = b.dataset.width+'%'; });
-    e.target.querySelectorAll('.stat-num[data-target]').forEach(el => {
-      const target = parseInt(el.dataset.target);
-      let cur=0; const step=target/30;
-      const iv = setInterval(() => { cur+=step; if(cur>=target){el.textContent=target;clearInterval(iv);}else el.textContent=Math.floor(cur); }, 40);
+  // ================= TRAIL =================
+  const canvas = document.getElementById('trail-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+  let trail = [];
+  document.addEventListener('mousemove', e => { trail.push({x: e.clientX, y: e.clientY, life: 1}); if (trail.length > 30) trail.shift(); });
+  (function drawTrail() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    trail.forEach((p, i) => {
+      p.life -= 0.035;
+      if (p.life <= 0) return;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, (i / trail.length) * 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(181,242,58,${p.life * 0.28})`;
+      ctx.fill();
     });
-    obs.unobserve(e.target);
+    requestAnimationFrame(drawTrail);
+  })();
+
+  // ================= SCROLL PROGRESS =================
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    document.getElementById('progress-bar').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
   });
-}, { threshold: 0.15 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-<script>
 
-// ================= IMAGE MODAL =================
-function openModal(img) {
-  const modal = document.getElementById("imageModal");
-  const modalImg = document.getElementById("modalImage");
-  modal.style.display = "block";
-  modalImg.src = img.src;
-}
+  // ================= SCROLL REVEAL + SKILL BARS + COUNTERS =================
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (!e.isIntersecting) return;
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      e.target.querySelectorAll('.skill-bar-fill').forEach(b => { b.style.width = b.dataset.width + '%'; });
+      e.target.querySelectorAll('.stat-num[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        let cur = 0; const step = target / 30;
+        const iv = setInterval(() => { cur += step; if (cur >= target) { el.textContent = target; clearInterval(iv); } else el.textContent = Math.floor(cur); }, 40);
+      });
+      obs.unobserve(e.target);
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-function closeModal() {
-  document.getElementById("imageModal").style.display = "none";
-}
-
-// ================= TYPING EFFECT =================
-const phrases = [
-  'Health & Clinical Data Analyst | SQL | Excel | Python | Power BI',
-  'Transforming healthcare data into actionable insights',
-  'Open to healthcare data analyst opportunities — let\'s connect'
-];
-
-let pIdx = 0, cIdx = 0, del = false;
-const typedEl = document.getElementById('typed-text');
-
-function type(){
-  const ph = phrases[pIdx];
-
-  if(!del){
-    typedEl.textContent = ph.slice(0, ++cIdx);
-    if(cIdx === ph.length){
-      del = true;
-      setTimeout(type, 2200);
-      return;
-    }
-  } else {
-    typedEl.textContent = ph.slice(0, --cIdx);
-    if(cIdx === 0){
-      del = false;
-      pIdx = (pIdx + 1) % phrases.length;
-      setTimeout(type, 400);
-      return;
-    }
+  // ================= IMAGE MODAL =================
+  function openModal(img) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    modal.style.display = 'block';
+    modalImg.src = img.src;
+  }
+  function closeModal() {
+    document.getElementById('imageModal').style.display = 'none';
   }
 
-  setTimeout(type, del ? 26 : 50);
-}
-
-setTimeout(type, 1000);
-
-
-// ================= TOTAL VIEW COUNTER =================
-async function trackViews(){
-  const key = 'portfolio_total_views';
-  try {
-    let total = 1;
-
-    try { 
-      const r = await window.storage.get(key, true); 
-      if(r?.value) total = parseInt(r.value) + 1; 
-    } catch(e){}
-
-    await window.storage.set(key, String(total), true);
-    document.getElementById('total-views-num').textContent = total;
-
-  } catch(e){
-    document.getElementById('total-views-num').textContent = '—';
+  // ================= TYPING EFFECT =================
+  const phrases = [
+    'Health & Clinical Data Analyst | SQL | Excel | Python | Power BI',
+    'Transforming healthcare data into actionable insights',
+    'Open to healthcare data analyst opportunities — let\'s connect'
+  ];
+  let pIdx = 0, cIdx = 0, del = false;
+  const typedEl = document.getElementById('typed-text');
+  function type() {
+    const ph = phrases[pIdx];
+    if (!del) {
+      typedEl.textContent = ph.slice(0, ++cIdx);
+      if (cIdx === ph.length) { del = true; setTimeout(type, 2200); return; }
+    } else {
+      typedEl.textContent = ph.slice(0, --cIdx);
+      if (cIdx === 0) { del = false; pIdx = (pIdx + 1) % phrases.length; setTimeout(type, 400); return; }
+    }
+    setTimeout(type, del ? 26 : 50);
   }
-}
+  setTimeout(type, 1000);
 
-trackViews();
-
-<script>
-  // your existing JS code (typing effect, counter, modal functions, etc.)
+  // ================= TOTAL VIEW COUNTER =================
+  async function trackViews() {
+    const key = 'portfolio_total_views';
+    try {
+      let total = 1;
+      try {
+        const r = await window.storage.get(key, true);
+        if (r?.value) total = parseInt(r.value) + 1;
+      } catch(e) {}
+      await window.storage.set(key, String(total), true);
+      document.getElementById('total-views-num').textContent = total;
+    } catch(e) {
+      document.getElementById('total-views-num').textContent = '—';
+    }
+  }
+  trackViews();
 </script>
-
-<!-- IMAGE MODAL (ADD THIS HERE) -->
-<div id="imageModal" class="modal" onclick="closeModal()">
-  <span class="close">&times;</span>
-  <img class="modal-content" id="modalImage">
-</div>
 
 </body>
 </html>
