@@ -136,6 +136,16 @@
     .reveal { opacity:0; transform:translateY(30px); transition:opacity .7s ease,transform .7s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
 
+    /* PROBLEM / IMPACT BLOCKS */
+    .problem-block { background: rgba(181,242,58,0.04); border: 1px solid rgba(181,242,58,0.15); border-radius: 2px; padding: 1.2rem 1.4rem; margin-bottom: 1.5rem; }
+    .problem-label { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin-bottom:.4rem; }
+    .problem-title { font-family:'DM Serif Display',serif; font-size:1.05rem; color:var(--text); margin-bottom:.5rem; }
+    .problem-desc { font-size:.83rem; color:var(--muted); line-height:1.6; }
+    .insights-label { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--accent2); margin-bottom:.75rem; }
+    .impact-block { background: rgba(58,242,160,0.04); border: 1px solid rgba(58,242,160,0.15); border-radius: 2px; padding: 1.2rem 1.4rem; margin-bottom: 1.5rem; }
+    .impact-label { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--accent2); margin-bottom:.4rem; }
+    .impact-desc { font-size:.83rem; color:var(--muted); line-height:1.6; }
+
     /* PROJECT CARDS */
     .projects-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:1.5px; background:var(--border); border:1.5px solid var(--border); }
     .project-card { background:var(--surface); padding:2.5rem; transition:background .25s; position:relative; overflow:hidden; }
@@ -269,10 +279,22 @@
       <div class="card-visual">
         <img src="Hospital-Dashboard.png" alt="Hospital Dashboard Screenshot" onclick="openModal(this)">
       </div>
+      <div class="problem-block">
+        <div class="problem-label">Problem Identified</div>
+        <div class="problem-title">Operational Blind Spot</div>
+        <p class="problem-desc">Hospital administrators lacked a consolidated view connecting patient volume, bed utilization, case complexity, and revenue &mdash; making it impossible to pinpoint where inefficiencies were costing the most or which specialties drove the highest financial return.</p>
+      </div>
+      <div class="insights-label">Key Insights Uncovered</div>
       <div class="insights">
-        <div class="insight">Key insight or finding #1 from this dashboard</div>
-        <div class="insight">Key metric, trend, or result that matters</div>
-        <div class="insight">What decision this dashboard helped make</div>
+        <div class="insight">Revenue is specialty-driven, not volume-driven. General Surgery and Orthopaedics contributed ~31% of total revenue despite not being the highest-volume departments &mdash; signaling where case complexity pays off.</div>
+        <div class="insight">Payer mix is dangerously concentrated. 85.6% insurance-funded vs. 14.4% corporate &mdash; a single-payer reliance that creates financial risk if contract terms shift.</div>
+        <div class="insight">Bed occupancy (28.2%) is well below optimal thresholds (75&ndash;85%), indicating significant capacity underutilization and a missed revenue opportunity.</div>
+        <div class="insight">CMI rises linearly with severity (1.006 &rarr; 1.076 across levels 1&ndash;3), confirming coding alignment &mdash; but showing headroom to improve CMI capture for complex cases.</div>
+        <div class="insight">Revenue peaked in February ($1.29M) and collapsed in December ($242K) &mdash; a 79% drop signaling seasonal demand variation that staffing and budgets should anticipate.</div>
+      </div>
+      <div class="impact-block">
+        <div class="impact-label">Business Impact</div>
+        <p class="impact-desc">Provided hospital leadership with a single, always-current operational view &mdash; replacing ad-hoc reporting with a structured dashboard that surfaces the link between clinical complexity, resource use, and financial performance. Findings directly inform specialty investment priorities, payer contract strategy, and seasonal workforce planning.</p>
       </div>
       <div class="tags">
         <span class="tag">Excel</span>
