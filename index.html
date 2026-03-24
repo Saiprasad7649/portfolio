@@ -62,51 +62,7 @@
       transition: width 0.1s linear;
     }
 
-    /* TOAST */
-    #toast-container {
-      position: fixed; bottom: 2rem; right: 2rem;
-      z-index: 5000; display: flex;
-      flex-direction: column; gap: 0.75rem;
-      pointer-events: none;
-    }
-    .toast {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      padding: 0.85rem 1.2rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.73rem;
-      color: var(--text);
-      border-radius: 4px;
-      display: flex; align-items: center; gap: 0.75rem;
-      min-width: 280px; max-width: 340px;
-      animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-      pointer-events: all;
-    }
-    .toast.exit { animation: toastOut 0.35s ease forwards; }
-    .toast-dot {
-      width: 7px; height: 7px;
-      background: var(--accent); border-radius: 50%;
-      flex-shrink: 0; animation: blink 1.5s ease-in-out infinite;
-    }
-    .toast-time { margin-left: auto; color: var(--muted); font-size: 0.65rem; }
-    @keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes toastOut { from { opacity: 1; transform: translateX(0); max-height: 80px; } to { opacity: 0; transform: translateX(24px); max-height: 0; padding: 0; margin: 0; } }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    /* LIVE BADGE */
-    #live-badge {
-      position: fixed; top: 5rem; right: 2rem;
-      background: var(--surface); border: 1px solid var(--border);
-      padding: 0.5rem 1rem; font-family: 'DM Mono', monospace;
-      font-size: 0.68rem; color: var(--muted); border-radius: 2px;
-      z-index: 200; display: flex; align-items: center; gap: 0.5rem;
-    }
-    .live-dot {
-      width: 6px; height: 6px; background: #f23a3a;
-      border-radius: 50%; animation: blink 1s ease-in-out infinite;
-    }
-    #live-count { color: var(--accent); font-weight: 500; }
 
     /* NAV */
     nav {
@@ -248,7 +204,6 @@
       footer { flex-direction:column; gap:1rem; text-align:center; }
       body { cursor:auto; }
       #cursor, #cursor-ring, #trail-canvas { display:none; }
-      #live-badge { right:1rem; }
     }
   </style>
 </head>
@@ -258,8 +213,6 @@
 <div id="cursor-ring"></div>
 <canvas id="trail-canvas"></canvas>
 <div id="progress-bar"></div>
-<div id="live-badge"><span class="live-dot"></span><span id="live-count">1</span>&nbsp;viewing now</div>
-<div id="toast-container"></div>
 
 <nav>
   <div class="nav-logo">◈ Saiprasad Gone · Data Portfolio</div>
@@ -304,8 +257,7 @@
       <h3 class="card-title">Project Title One</h3>
       <p class="card-desc">A short 1–2 sentence description of this dashboard and the problem it solves.</p>
       <div class="card-visual">
-        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        <span>Add dashboard screenshot</span>
+  <img src="Hospital-Dashboard.png" alt="Hospital Dashboard Screenshot">
       </div>
       <div class="insights">
         <div class="insight">Key insight or finding #1 from this dashboard</div>
@@ -314,17 +266,16 @@
       </div>
       <div class="tags"><span class="tag">Excel</span><span class="tag">Pivot Tables</span><span class="tag">Data Viz</span></div>
       <div class="card-links">
-  <a href="https://github.com/Saiprasad7649/portfolio/blob/main/Projects/Hospital-Dashboard.xlsm" target="_blank" class="card-link">View on GitHub ↗</a>
-  <a href="https://raw.githubusercontent.com/Saiprasad7649/portfolio/main/Projects/Hospital-Dashboard.xlsm" download class="card-link">Download .xlsm ↓</a>
-</div>
+        <a href="https://github.com/Saiprasad7649/portfolio/blob/main/Projects/Hospital-Dashboard.xlsm" target="_blank" class="card-link">View on GitHub ↗</a>
+        <a href="https://raw.githubusercontent.com/Saiprasad7649/portfolio/main/Projects/Hospital-Dashboard.xlsm" download class="card-link">Download .xlsm ↓</a>
+      </div>
     </div>
     <div class="project-card reveal">
       <div class="card-type"><span>Excel Dashboard</span></div>
       <h3 class="card-title">Project Title Two</h3>
       <p class="card-desc">A short 1–2 sentence description of this dashboard and the problem it solves.</p>
-      <div class="card-visual">
-        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        <span>Add dashboard screenshot</span>
+     <div class="card-visual">
+  <img src="Hospital-Dashboard.png" alt="Hospital Dashboard Screenshot">
       </div>
       <div class="insights">
         <div class="insight">Key insight or finding #1 from this dashboard</div>
@@ -333,9 +284,9 @@
       </div>
       <div class="tags"><span class="tag">Excel</span><span class="tag">VLOOKUP</span><span class="tag">Charts</span></div>
       <div class="card-links">
-  <a href="https://github.com/Saiprasad7649/portfolio/blob/main/Projects/Hospital-Dashboard.xlsm" target="_blank" class="card-link">View on GitHub ↗</a>
-  <a href="https://raw.githubusercontent.com/Saiprasad7649/portfolio/main/Projects/Hospital-Dashboard.xlsm" download class="card-link">Download .xlsm ↓</a>
-</div>
+        <a href="https://github.com/Saiprasad7649/portfolio/blob/main/Projects/Hospital-Dashboard.xlsm" target="_blank" class="card-link">View on GitHub ↗</a>
+        <a href="https://raw.githubusercontent.com/Saiprasad7649/portfolio/main/Projects/Hospital-Dashboard.xlsm" download class="card-link">Download .xlsm ↓</a>
+      </div>
     </div>
   </div>
 </section>
@@ -468,46 +419,6 @@ function type(){
   setTimeout(type, del?26:50);
 }
 setTimeout(type, 1000);
-
-// TOAST SYSTEM
-function showToast(name, action){
-  const container = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className='toast';
-  const now = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  t.innerHTML=`<span class="toast-dot"></span><span><strong style="color:var(--text)">${name}</strong><br><span style="color:var(--muted)">${action}</span></span><span class="toast-time">${now}</span>`;
-  container.appendChild(t);
-  setTimeout(()=>{ t.classList.add('exit'); setTimeout(()=>t.remove(),400); }, 4500);
-}
-
-const names = ['Someone from Mumbai','A recruiter from Bangalore','A visitor from Delhi','Someone in Chicago','A hiring manager','A data analyst','Someone in London','A visitor from New York','Someone from Singapore','A recruiter in Toronto','Someone from Hyderabad','A viewer from Seattle'];
-const actions = ['is viewing your portfolio','just opened your Excel dashboard','is looking at your projects','just found your GitHub profile','is reading your about section','is checking out your skills','just scrolled to your projects','spent 2 min on your dashboard','bookmarked your portfolio','is comparing your skills'];
-
-// Live count badge
-let liveCount = 1;
-function setLive(n){ liveCount=Math.max(1,n); document.getElementById('live-count').textContent=liveCount; }
-
-// Staggered realistic toast queue
-[
-  [3000, names[0], actions[0]],
-  [9000, names[1], actions[1]],
-  [17000, names[2], actions[2]],
-  [26000, names[3], actions[3]],
-  [35000, names[4], actions[4]],
-].forEach(([d,n,a]) => setTimeout(()=>showToast(n,a), d));
-
-// Live count drifts
-[5000,12000,20000,29000,38000].forEach((t,i) => setTimeout(()=>setLive([2,3,2,4,3][i]), t));
-
-// Keep firing randomly after initial burst
-function scheduleNext(){
-  const wait = 50000 + Math.random()*60000;
-  setTimeout(()=>{
-    showToast(names[Math.floor(Math.random()*names.length)], actions[Math.floor(Math.random()*actions.length)]);
-    scheduleNext();
-  }, wait);
-}
-setTimeout(scheduleNext, 45000);
 
 // TOTAL VIEW COUNTER (persistent storage)
 async function trackViews(){
